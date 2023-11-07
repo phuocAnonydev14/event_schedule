@@ -3,7 +3,7 @@ const {responseData} = require("../constant/responseData");
 const jwt = require("jsonwebtoken")
 const db = require("../models");
 const User = db.users;
-
+const mongoose = require('mongoose')
 
 // Create and Save a new Tutorial
 exports.signup = async (req, res, next) => {
@@ -19,8 +19,8 @@ exports.signup = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
-            email,
-            password: hashedPassword,
+            ...req.body,
+            password:hashedPassword
         });
 
         await newUser.save();
@@ -48,7 +48,7 @@ exports.signIn = async (req, res) => {
             return res.json(responseData(false, {}, "Email hoặc mật khẩu không đúng"));
         }
         delete user.password
-        const accessToken = jwt.sign({...user}, 'your_secret_key');
+        const accessToken = jwt.sign({_id:user._id,email:user.email}, 'your_secret_key');
         res.json(responseData(true, {accessToken, account: user}, 'Đăng nhập thành công.'));
     } catch (e) {
         return res.json(responseData(false,"Lỗi máy chủ"))
@@ -58,7 +58,8 @@ exports.signIn = async (req, res) => {
 
 exports.fetchUser = async (req, res) => {
     try {
-        return res.json(responseData(true,{account:req.user},"lấy thông tin người dùng thành công"))
+        const user = await User.findOne({_id:req.user._id});
+        return res.json(responseData(true,{account:user},"lấy thông tin người dùng thành công"))
     } catch (e) {
         return res.json(responseData(false,"Lỗi máy chủ"))
     }

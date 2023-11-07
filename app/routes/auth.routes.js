@@ -1,3 +1,5 @@
+const authenticateToken = require('../middleware/auth.middleware');
+
 module.exports = app => {
   const auth = require("../controllers/auth.controller.js");
 

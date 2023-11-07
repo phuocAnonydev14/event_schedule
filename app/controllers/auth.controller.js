@@ -49,7 +49,7 @@ exports.signIn = async (req, res) => {
             return res.status(400).json(responseData(false, {}, "Email or password not correct"));
         }
         delete user.password
-        const accessToken = jwt.sign({userId: user._id, email: user.email}, 'your_secret_key', {expiresIn: '1h'});
+        const accessToken = jwt.sign({userId: user._id, email: user.email}, 'your_secret_key');
         res.status(200).json(responseData(true, {accessToken, account: user}, "Sign in success"));
     } catch (e) {
         return res.status(400).json({status: 400, msg: "invalid condition", isSuccess: false})

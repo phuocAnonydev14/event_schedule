@@ -13,7 +13,7 @@ exports.getAll = async (req, res, next) => {
         res.json(responseData(true, {events:allEvents},'lấy thông tin sự kiện thành công'));
 
     } catch (e) {
-        return res.json(responseData(false,"Lỗi máy chủ"))
+        return res.json(responseData(false,{},"Lỗi máy chủ"))
     }
 };
 

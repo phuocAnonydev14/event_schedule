@@ -34,6 +34,6 @@ exports.create = async (req, res, next) => {
         res.json(responseData(true, {event: newEvent}, 'Thêm sự kiện thành công'));
     } catch (e) {
         console.log(e);
-        return res.json(responseData(false, "Lỗi máy chủ"))
+        return res.json(responseData(false,{}, "Lỗi máy chủ"))
     }
 }

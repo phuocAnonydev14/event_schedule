@@ -3,12 +3,8 @@ module.exports = mongoose => {
         {
             name: String,
             description: String,
-            startDate: String,
-            endDate: String,
-            phone: String,
-            role: String,
-            avatar: String,
-            dob: Date
+            startDate: Date,
+            endDate: Date,
         },
         {timestamps: true}
     );

@@ -1,11 +1,15 @@
 const authenticateToken = require('../middleware/auth.middleware');
 
 module.exports = app => {
-  const event = require("../controllers/event.controller.js");
+    const renter = require("../controllers/renter.controller.js");
 
-  const router = require("express").Router();
+    const router = require("express").Router();
 
-  router.get("/", event.getAll);
+    router.get("/", renter.getAll);
+    router.post("/", renter.create);
+    router.patch("/:id", renter.update);
+    router.delete("/:id", renter.delete);
+    router.get("/:id", renter.findById);
 
-  app.use("/api/event",authenticateToken, router);
+    app.use("/api/renter", authenticateToken, router);
 };

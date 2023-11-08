@@ -2,13 +2,9 @@ module.exports = mongoose => {
     const eventSchema = mongoose.Schema(
         {
             name: String,
-            description: String,
-            startDate: String,
-            endDate: String,
-            phone: String,
-            role: String,
-            avatar: String,
-            dob: Date
+            unit: String,
+            price: Number,
+            note: String,
         },
         {timestamps: true}
     );

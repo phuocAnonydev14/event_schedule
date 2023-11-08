@@ -1,12 +1,12 @@
 const {responseData} = require("../constant/responseData");
 const db = require("../models");
-const Renter = db.renters;
+const Order = db.orders;
 
 
 exports.getAll = async (req, res, next) => {
     try {
-        const allRenters = await Renter.find({})
-        res.json(responseData(true, {renters: allRenters}, 'lấy thông tin thiết bị thành công'));
+        const allOrders = await Order.find({})
+        res.json(responseData(true, {orders: allOrders}, 'lấy thông đơn hàng thành công'));
     } catch (e) {
         return res.json(responseData(false,{}, "Lỗi máy chủ"))
     }
@@ -14,15 +14,16 @@ exports.getAll = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const {name, unit, price, note} = req.body
-        if (!name || !unit || !price || !note) {
+        const {event, renters, address, phone} = req.body
+        if (!event || !renters || !address || !phone) {
             return res.json(responseData(false, {}, "các trường chưa hợp lệ"))
         }
-        const newRenter = new Renter({
-            ...req.body
+        const newOrder = new Order({
+            ...req.body,
+            user: req.user._id
         })
-        await newRenter.save()
-        res.json(responseData(true, {renter: newRenter}, 'Thêm thiết bị thành công'));
+        await newOrder.save()
+        res.json(responseData(true, {order: newOrder}, 'Thêm đơn hàng thành công'));
     } catch (e) {
         return res.json(responseData(false, {},"Lỗi máy chủ"))
     }
@@ -35,13 +36,13 @@ exports.update = async (req, res, next) => {
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const currentRenter = await Renter.findById(id)
-        if (!currentRenter) {
-            return res.json(responseData(false, {}, "Thiết bị không tồn tại"))
+        const currentOrder = await Order.findById(id)
+        if (!currentOrder) {
+            return res.json(responseData(false, {}, "Đơn hàng không tồn tại"))
         }
-        await currentRenter.update({...req.body})
-        await currentRenter.reload()
-        res.json(responseData(true, {renter: currentRenter}, 'Cập nhật thông tin thiết bị thành công'));
+        await currentOrder.update({...req.body})
+        await currentOrder.reload()
+        res.json(responseData(true, {order: currentOrder}, 'Cập nhật thông tin đơn hàng thành công'));
     } catch (e) {
         return res.json(responseData(false,{}, "Lỗi máy chủ"))
     }
@@ -57,7 +58,7 @@ exports.delete = async (req, res) => {
         if(!deleteRes){
             return res.json(responseData(false,{}, "Lỗi máy chủ"))
         }
-        return res.json(responseData(true, {}, "xóa thiết bị thành công"))
+        return res.json(responseData(true, {}, "xóa Đơn hàng thành công"))
     } catch (e) {
         return res.json(responseData(false,{}, "Lỗi máy chủ"))
     }
@@ -70,11 +71,11 @@ exports.findById = async (req, res) => {
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const renter = await Renter.findById(id)
-        if (!renter) {
-            return res.json(responseData(false, {},"Thiết bị không tồn tại"))
+        const order = await Order.findById(id)
+        if (!order) {
+            return res.json(responseData(false, {},"Đơn hàng không tồn tại"))
         }
-        return res.json(responseData(true, {renter}, "lấy thông tin thiết bị thành công"))
+        return res.json(responseData(true, {order}, "lấy thông tin đơn hàng thành công"))
     } catch (e) {
         return res.json(responseData(false, {},"Lỗi máy chủ"))
     }

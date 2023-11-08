@@ -5,8 +5,8 @@ module.exports = app => {
 
   const router = require("express").Router();
 
-  // Create a new Tutorial
   router.get("/", event.getAll);
+  router.post("/", event.create);
 
   app.use("/api/event",authenticateToken, router);
 };

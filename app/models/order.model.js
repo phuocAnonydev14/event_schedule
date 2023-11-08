@@ -1,19 +1,20 @@
 module.exports = mongoose => {
-    const eventSchema = mongoose.Schema(
+    const orderSchema = mongoose.Schema(
         {
-            name: String,
-            description: String,
-            startDate: Date,
-            endDate: Date,
+            event: String,
+            renters: [String],
+            address:String,
+            phone: String,
+            user: String,
         },
         {timestamps: true}
     );
 
-    eventSchema.method("toJSON", function () {
+    orderSchema.method("toJSON", function () {
         const {__v, _id, ...object} = this.toObject();
         object.id = _id;
         return object;
     });
 
-    return mongoose.model("events", eventSchema);
+    return mongoose.model("orders", orderSchema);
 };

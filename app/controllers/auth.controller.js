@@ -14,7 +14,7 @@ exports.signup = async (req, res, next) => {
         const {email, password} = req.body;
         const existingUser = await User.findOne({email});
         if (existingUser) {
-            return res.json({message: 'Email đã tồn tại.'});
+            return res.json(responseData(false,{},"message: 'Email đã tồn tại.'"));
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 

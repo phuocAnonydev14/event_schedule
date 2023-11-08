@@ -14,7 +14,7 @@ exports.signup = async (req, res, next) => {
         const {email, password} = req.body;
         const existingUser = await User.findOne({email});
         if (existingUser) {
-            return res.json(responseData(false,{},"message: 'Email đã tồn tại.'"));
+            return res.json(responseData(false,{},"'Email đã tồn tại.'"));
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -27,7 +27,7 @@ exports.signup = async (req, res, next) => {
         res.json(responseData(true, {},'Đăng ký thành công.'));
 
     } catch (e) {
-        return res.json(responseData(false,"Lỗi máy chủ"))
+        return res.json(responseData(false,{},"Lỗi máy chủ"))
     }
 };
 
@@ -51,7 +51,7 @@ exports.signIn = async (req, res) => {
         const accessToken = jwt.sign({_id:user._id,email:user.email}, 'your_secret_key');
         res.json(responseData(true, {accessToken, account: user}, 'Đăng nhập thành công.'));
     } catch (e) {
-        return res.json(responseData(false,"Lỗi máy chủ"))
+        return res.json(responseData(false,{},"Lỗi máy chủ"))
     }
 
 };
@@ -61,7 +61,7 @@ exports.fetchUser = async (req, res) => {
         const user = await User.findOne({_id:req.user._id});
         return res.json(responseData(true,{account:user},"lấy thông tin người dùng thành công"))
     } catch (e) {
-        return res.json(responseData(false,"Lỗi máy chủ"))
+        return res.json(responseData(false,{},"Lỗi máy chủ"))
     }
 };
 

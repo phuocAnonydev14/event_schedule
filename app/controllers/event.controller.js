@@ -9,9 +9,10 @@ const Event = db.events;
 // Create and Save a new Tutorial
 exports.getAll = async (req, res, next) => {
     try {
-        const allEvents = await Event.find({}).select("title banner _id")
+        const allEvents = await Event.find({}).select("title banner").populate("service")
         res.json(responseData(true, {events: allEvents}, 'lấy thông tin sự kiện thành công'));
     } catch (e) {
+        console.log(e)
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
     }
 };
@@ -19,8 +20,8 @@ exports.getAll = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const {title, content, banner, startDate, endDate, serviceId} = req.body
-        if (!title || !content || !banner || !startDate || !endDate || !serviceId) {
+        const {title, content, banner, startDate, endDate, service} = req.body
+        if (!title || !content || !banner || !startDate || !endDate || !service) {
             return res.json(responseData(false, {}, "Các trường chưa hợp lệ"))
         }
         const newEvent = new Event({

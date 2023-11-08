@@ -24,6 +24,10 @@ exports.create = async (req, res, next) => {
         if (!title) {
             return res.json(responseData(false, {}, "các trường chưa hợp lệ"))
         }
+        const existedService = await Service.find({title})
+        if (existedService.length > 0) {
+            return res.json(responseData(false, {},"dịch vụ đã tồn tại"))
+        }
         const newService = new Service({
             ...req.body,
         })

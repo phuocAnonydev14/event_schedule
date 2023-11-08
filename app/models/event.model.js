@@ -6,7 +6,10 @@ module.exports = mongoose => {
             banner: String,
             startDate: Date,
             endDate: Date,
-            serviceId: String
+            service: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'services'
+            },
         },
         {timestamps: true}
     );

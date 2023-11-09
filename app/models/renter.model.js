@@ -4,6 +4,8 @@ module.exports = mongoose => {
             name: String,
             unit: String,
             price: Number,
+            quantity:Number,
+            sold:Number,
             note: String,
         },
         {timestamps: true}

@@ -6,6 +6,7 @@ module.exports = app => {
   const router = require("express").Router();
 
   router.get("/", event.getAll);
+  router.get("/:id", event.findById);
   router.post("/", event.create);
 
   app.use("/api/event",authenticateToken, router);

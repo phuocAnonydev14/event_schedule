@@ -9,7 +9,7 @@ const Event = db.events;
 // Create and Save a new Tutorial
 exports.getAll = async (req, res, next) => {
     try {
-        const allEvents = await Event.find({}).select("title banner").populate("service")
+        const allEvents = await Event.find({}).select("title banner")
         res.json(responseData(true, {events: allEvents}, 'lấy thông tin sự kiện thành công'));
     } catch (e) {
         console.log(e)
@@ -66,7 +66,7 @@ exports.findById = async (req, res) => {
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const event = await Event.findById(id)
+        const event = await Event.findById(id).populate("service")
         if (!event) {
             return res.json(responseData(false, {}, "Sự kiện không tồn tại"))
         }

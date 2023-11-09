@@ -3,7 +3,9 @@ const {responseData} = require("../constant/responseData");
 const jwt = require("jsonwebtoken")
 const db = require("../models");
 const moment = require("moment/moment");
+const serviceModel = require("../models/service.model");
 const Event = db.events;
+const Service = db.service;
 
 
 // Create and Save a new Tutorial
@@ -66,7 +68,7 @@ exports.findById = async (req, res) => {
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const event = await Event.findById(id).populate("service")
+        const event = await Event.findById(id).populate({path:"service",select:"title",model:Service})
         if (!event) {
             return res.json(responseData(false, {}, "Sự kiện không tồn tại"))
         }

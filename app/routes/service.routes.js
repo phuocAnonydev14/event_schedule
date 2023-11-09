@@ -8,8 +8,7 @@ module.exports = app => {
     router.get("/", service.getAll);
     router.post("/", service.create);
     router.patch("/:id", service.update);
-    // router.delete("/:id", service.delete);
-    // router.get("/:id", service.findById);
+    router.delete("/:id", service.delete);
 
     app.use("/api/service", authenticateToken, router);
 };

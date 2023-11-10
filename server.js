@@ -32,13 +32,13 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
 });
 
-require("./app/routes/turorial.routes")(app);
 require("./app/routes/auth.routes")(app);
 require("./app/routes/fetchUser.routes")(app);
 require("./app/routes/events.routes")(app);
 require("./app/routes/renters.routes")(app);
 require("./app/routes/orders.routes")(app);
 require("./app/routes/service.routes")(app);
+require("./app/routes/users.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

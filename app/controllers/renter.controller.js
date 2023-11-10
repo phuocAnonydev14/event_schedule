@@ -39,14 +39,10 @@ exports.update = async (req, res, next) => {
     if (!id) {
       return res.json(responseData(false, {}, "Id không hợp lệ"))
     }
-    const currentRenter = await Renter.findById(id)
-    if (!currentRenter) {
-      return res.json(responseData(false, {}, "Thiết bị không tồn tại"))
-    }
-    await currentRenter.update({ ...req.body })
-    await currentRenter.reload()
-    res.json(responseData(true, { renter: currentRenter }, 'Cập nhật thông tin thiết bị thành công'));
+    const udpatedRenter = await Renter.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true })
+    res.json(responseData(true, { renter: udpatedRenter }, 'Cập nhật thông tin thiết bị thành công'));
   } catch (e) {
+    console.log({ e });
     return res.json(responseData(false, {}, "Lỗi máy chủ"))
   }
 }

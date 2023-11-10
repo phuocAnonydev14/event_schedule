@@ -100,7 +100,6 @@ exports.delete = async (req, res) => {
         if (!deleteRes.deletedCount) {
             return res.json(responseData(false, {}, "Lỗi máy chủ"))
         }
-        console.log(deleteRes);
         return res.json(responseData(true, {}, "xóa Đơn hàng thành công"))
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))

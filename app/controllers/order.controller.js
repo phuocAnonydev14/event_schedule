@@ -91,14 +91,16 @@ exports.update = async (req, res, next) => {
 
 exports.delete = async (req, res) => {
     try {
+
         const { id } = req.params
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const deleteRes = await Renter.deleteOne({ _id: id })
-        if (!deleteRes) {
+        const deleteRes = await Order.deleteOne({ _id: id })
+        if (!deleteRes.deletedCount) {
             return res.json(responseData(false, {}, "Lỗi máy chủ"))
         }
+        console.log(deleteRes);
         return res.json(responseData(true, {}, "xóa Đơn hàng thành công"))
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))

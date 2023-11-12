@@ -26,11 +26,11 @@ exports.delete = async (req, res) => {
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const deleteRes = await Event.deleteOne({_id: id})
+        const deleteRes = await User.deleteOne({_id: id})
         if (!deleteRes) {
             return res.json(responseData(false, {}, "Lỗi máy chủ"))
         }
-        return res.json(responseData(true, {}, "xóa Sự kiện thành công"))
+        return res.json(responseData(true, {}, "xóa  thành công"))
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
     }

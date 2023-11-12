@@ -4,18 +4,16 @@ module.exports = mongoose => {
             title: String,
             content: String,
             banner: String,
-            startDate: Date,
-            endDate: Date,
             service: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'services'
             },
         },
-        {timestamps: true}
+        { timestamps: true }
     );
 
     eventSchema.method("toJSON", function () {
-        const {__v, _id, ...object} = this.toObject();
+        const { __v, _id, ...object } = this.toObject();
         object.id = _id;
         return object;
     });

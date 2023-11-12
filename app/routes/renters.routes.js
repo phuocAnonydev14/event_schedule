@@ -1,3 +1,4 @@
+const adminCheck = require('../middleware/admin.middleware.js');
 const authenticateToken = require('../middleware/auth.middleware');
 
 module.exports = app => {
@@ -6,9 +7,9 @@ module.exports = app => {
     const router = require("express").Router();
 
     router.get("/", renter.getAll);
-    router.post("/", renter.create);
-    router.patch("/:id", renter.update);
-    router.delete("/:id", renter.delete);
+    router.post("/",adminCheck, renter.create);
+    router.patch("/:id",adminCheck, renter.update);
+    router.delete("/:id",adminCheck, renter.delete);
     router.get("/:id", renter.findById);
 
     app.use("/api/renter", authenticateToken, router);

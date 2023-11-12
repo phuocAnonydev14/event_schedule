@@ -1,6 +1,5 @@
 const {responseData} = require("../constant/responseData");
 const db = require("../models");
-const moment = require("moment/moment");
 const User = db.users;
 
 
@@ -34,5 +33,19 @@ exports.delete = async (req, res) => {
         return res.json(responseData(true, {}, "xóa Sự kiện thành công"))
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
+    }
+}
+
+exports.inviteAdmin = async (req,res) => {
+    try{
+        const {id} = req.params
+        if (!id) {
+            return res.json(responseData(false, {}, "Id không hợp lệ"))
+        }
+        const updatedUser = await User.findOneAndUpdate(id,{role:"admin"},{new:true})
+        res.json(responseData(true, {user: updatedUser}, 'Cập nhật thông tin người dùng thành công'));
+    }catch(e){
+        return res.json(responseData(false, {}, "Lỗi máy chủ"))
+
     }
 }

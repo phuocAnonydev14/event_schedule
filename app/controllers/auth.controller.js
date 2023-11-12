@@ -49,7 +49,7 @@ exports.signIn = async (req, res) => {
             return res.json(responseData(false, {}, "Email hoặc mật khẩu không đúng"));
         }
         delete user.password
-        const accessToken = jwt.sign({ _id: user._id, email: user.email }, 'your_secret_key');
+        const accessToken = jwt.sign({ _id: user._id, email: user.email, role: user.role }, 'your_secret_key');
         res.json(responseData(true, { accessToken, account: user }, 'Đăng nhập thành công.'));
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))

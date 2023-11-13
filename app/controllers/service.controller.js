@@ -21,8 +21,8 @@ exports.getAll = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const {title,renters} = req.body
-        if (!title || !renters) {
+        const {title,settings} = req.body
+        if (!title || !settings) {
             return res.json(responseData(false, {}, "các trường chưa hợp lệ"))
         }
         const existedService = await Service.find({title})

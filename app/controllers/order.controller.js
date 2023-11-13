@@ -66,7 +66,6 @@ exports.update = async (req, res, next) => {
             }
             const orderRenters = currentOrder.renters
             const currentRenterOrder = orderRenters.find(item => item.renter == updatedRenterId)
-            console.log(currentRenterOrder);
 
             const consumedQuantity = (currentRenter.sold || 0) - currentRenterOrder.quantity + +quantity
             if (currentRenter.quantity < consumedQuantity) {

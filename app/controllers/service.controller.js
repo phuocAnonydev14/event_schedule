@@ -4,12 +4,13 @@ const jwt = require("jsonwebtoken")
 const db = require("../models");
 const moment = require("moment/moment");
 const Service = db.service;
+const Renter = db.renters;
 
 
 // Create and Save a new Tutorial
 exports.getAll = async (req, res, next) => {
     try {
-        const allService = await Service.find({})
+        const allService = await Service.find({}).populate("renters.renter")
         res.json(responseData(true, {services:allService},'lấy thông tin sự kiện thành công'));
 
     } catch (e) {
@@ -20,14 +21,16 @@ exports.getAll = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const {title} = req.body
-        if (!title) {
+        const {title,renters} = req.body
+        if (!title || !renters) {
             return res.json(responseData(false, {}, "các trường chưa hợp lệ"))
         }
         const existedService = await Service.find({title})
+        
         if (existedService.length > 0) {
             return res.json(responseData(false, {},"dịch vụ đã tồn tại"))
         }
+
         const newService = new Service({
             ...req.body,
         })
@@ -45,12 +48,8 @@ exports.update = async (req, res, next) => {
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const service = await Service.findById(id)
-        if (!service) {
-            return res.json(responseData(false, {},"dịch vụ không tồn tại"))
-        }
-        await service.update({...req.body})
-        res.json(responseData(true, {service: service}, 'Thêm dịch vụ thành công'));
+        const updatedService = await Service.findOneAndUpdate({...req.body}).populate("renters.renter")
+        res.json(responseData(true, {service: updatedService}, 'Thêm dịch vụ thành công'));
     } catch (e) {
         console.log(e);
         return res.json(responseData(false,{}, "Lỗi máy chủ"))

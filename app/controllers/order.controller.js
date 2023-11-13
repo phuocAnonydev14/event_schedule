@@ -105,6 +105,20 @@ exports.delete = async (req, res) => {
     }
 }
 
+exports.deleteRenterOrder = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { renterId } = req.body
+        if (!id) {
+            return res.json(responseData(false, {}, "Id không hợp lệ"))
+        }
+        const order = await Order.findById(id)
+        order.update({ renters: order.renters.filter(renter => renter.renter !== renterId) })
+    } catch (e) {
+        return res.json(responseData(false, {}, "Lỗi máy chủ"))
+    }
+}
+
 
 exports.findById = async (req, res) => {
     try {

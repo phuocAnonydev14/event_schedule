@@ -10,6 +10,7 @@ module.exports = app => {
     router.post("/", adminCheck, service.create);
     router.patch("/:id", adminCheck, service.update);
     router.delete("/:id", adminCheck, service.delete);
+    router.get("/:id", adminCheck, service.fintById);
 
     app.use("/api/service", authenticateToken, router);
 };

@@ -6,7 +6,12 @@ const Renter = db.renters;
 exports.getAll = async (req, res, next) => {
   try {
     const allRenters = await Renter.find({})
-    res.json(responseData(true, { renters: allRenters }, 'lấy thông tin thiết bị thành công'));
+    res.json(responseData(true, {
+      renters: req.user.role == "admin" ? allRenters : allRenters.map(item => {
+        const { sold, ...info } = item._doc
+        return info
+      })
+    }, 'lấy thông tin thiết bị thành công'));
   } catch (e) {
     return res.json(responseData(false, {}, "Lỗi máy chủ"))
   }

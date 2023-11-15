@@ -115,8 +115,6 @@ exports.deleteRenterOrder = async (req, res) => {
         const order = await Order.findById(id)
         const currentRenterOrders = order.renters
         const renterOrderRes = currentRenterOrders.filter(renter => {
-            console.log(renter.renter);
-            console.log(renterId);
             return renter.renter != renterId
         });
         await order.update({ renters: renterOrderRes })

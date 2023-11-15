@@ -11,7 +11,7 @@ const Renter = db.renters;
 exports.getAll = async (req, res, next) => {
     try {
         const allService = await Service.find({}).populate("renters.renter")
-        res.json(responseData(true, { services: allService }, 'lấy thông tin sự kiện thành công'));
+        res.json(responseData(true, { services: allService }, 'lấy thông tin dịch vụ thành công'));
 
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
@@ -72,7 +72,7 @@ exports.delete = async (req, res) => {
     }
 }
 
-exports.fintById = async (req, res) => {
+exports.findById = async (req, res) => {
     try {
         const { id } = req.params
         if (!id) {

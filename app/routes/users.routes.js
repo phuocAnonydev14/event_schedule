@@ -7,6 +7,7 @@ module.exports = app => {
   const router = require("express").Router();
 
   router.patch("/:id", user.update);
+  router.delete("/:id", user.delete);
   router.patch("/inviteAdmin/:id", user.inviteAdmin);
 
   app.use("/api/user", authenticateToken, adminCheck, router);

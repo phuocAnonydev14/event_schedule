@@ -30,7 +30,7 @@ exports.delete = async (req, res) => {
         if (!deleteRes) {
             return res.json(responseData(false, {}, "Lỗi máy chủ"))
         }
-        return res.json(responseData(true, {}, "xóa  thành công"))
+        return res.json(responseData(true, {}, "xóa người dùng thành công"))
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
     }

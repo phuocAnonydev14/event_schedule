@@ -6,20 +6,33 @@ const Renter = db.renters;
 
 exports.getAll = async (req, res, next) => {
     try {
-        const allOrders = await Order.find({}).populate("renters.renter event")
+        const allOrders = await Order.find({}).populate("renters.renter user")
         res.json(responseData(true, { orders: allOrders }, 'Lấy thông đơn hàng thành công'));
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
     }
 };
 
+exports.getUserOrder = async (req, res, next) => {
+    try {
+        const {id} = req.params
+        const allOrders = await Order.find({user:id}).populate("renters.renter")
+        res.json(responseData(true, { orders: allOrders }, 'Lấy thông đơn hàng thành công'));
+    } catch (e) {
+        return res.json(responseData(false, {}, "Lỗi máy chủ"))
+    }
+};
+
+
+
 exports.create = async (req, res, next) => {
     try {
-        const { event, renters, address, phone } = req.body
+        const { renters, method } = req.body
 
-        if (!event || !renters || renters.length === 0 || !address || !phone) {
+        if (!renters || renters.length === 0 || !method) {
             return res.json(responseData(false, {}, "các trường chưa hợp lệ"))
         }
+
         for (let renter of renters) {
             const currentRenter = await Renter.findById(renter.renter)
             if (currentRenter) {
@@ -43,7 +56,7 @@ exports.create = async (req, res, next) => {
             user: req.user._id
         })
         await newOrder.save()
-        return res.json(responseData(true, { order: newOrder }, 'Thêm đơn hàng thành công'));
+        return res.json(responseData(true, { order: newOrder }, 'Thanh toán thành công'));
     } catch (e) {
         console.log(e);
         return res.json(responseData(false, {}, "Lỗi máy chủ"))

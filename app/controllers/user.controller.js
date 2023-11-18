@@ -18,6 +18,15 @@ exports.update = async (req, res) => {
     }
 }
 
+exports.getAll = async (req, res) => {
+    try {
+        const users = await User.find({})
+        res.json(responseData(true, {users: users}, 'Lấy thông tin người dùng thành công'));
+    } catch (e) {
+        return res.json(responseData(false, {}, "Lỗi máy chủ"))
+    }
+}
+
 
 
 exports.delete = async (req, res) => {

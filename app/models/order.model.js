@@ -1,31 +1,32 @@
-module.exports = mongoose => {
-    const orderSchema = mongoose.Schema(
+module.exports = (mongoose) => {
+  const orderSchema = mongoose.Schema(
+    {
+      renters: [
         {
-            event: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "events"
-            },
-            renters: [
-                {
-                    renter: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        ref: "renters"
-                    },
-                    quantity: Number
-                }
-            ],
-            address: String,
-            phone: String,
-            user: String,
+          renter: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "renters",
+          },
+          quantity: Number,
         },
-        { timestamps: true }
-    );
+      ],
+      method: String,
+      paypalId: String,
+      address: String,
+      phone: String,
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+      },
+    },
+    { timestamps: true }
+  );
 
-    orderSchema.method("toJSON", function () {
-        const { __v, _id, ...object } = this.toObject();
-        object.id = _id;
-        return object;
-    });
+  orderSchema.method("toJSON", function () {
+    const { __v, _id, ...object } = this.toObject();
+    object.id = _id;
+    return object;
+  });
 
-    return mongoose.model("orders", orderSchema);
+  return mongoose.model("orders", orderSchema);
 };

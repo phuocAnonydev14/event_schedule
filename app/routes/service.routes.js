@@ -8,6 +8,7 @@ module.exports = (app) => {
 
   router.get("/", service.getAll);
   router.post("/", adminCheck, service.create);
+  router.post("/:id/setting", adminCheck, service.addSettingOption);
   router.patch("/:id", adminCheck, service.update);
   router.delete("/:id", adminCheck, service.delete);
   router.get("/:id", service.findById);

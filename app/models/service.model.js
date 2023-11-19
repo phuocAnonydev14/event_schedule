@@ -11,6 +11,7 @@ module.exports = mongoose => {
                                 type: mongoose.Schema.Types.ObjectId,
                                 ref: "renters"
                             },
+                            price: Number,
                             quantity: Number
                         }
                     ],

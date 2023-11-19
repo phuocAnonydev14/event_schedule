@@ -7,6 +7,7 @@ module.exports = (app) => {
   const router = require("express").Router();
 
   router.get("/", service.getAll);
+  router.get("/service_pack", service.getAllWithCustom);
   router.post("/", adminCheck, service.create);
   router.post("/:id/setting", adminCheck, service.addSettingOption);
   router.patch("/:id", adminCheck, service.update);

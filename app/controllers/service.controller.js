@@ -7,7 +7,7 @@ const Service = db.service;
 const Renter = db.renters;
 
 // Create and Save a new Tutorial
-exports.getAll = async (req, res, next) => {
+exports.getAllWithCustom = async (req, res, next) => {
   try {
     const allService = await Service.find({}).populate(
       "settings.renters.renter"
@@ -20,8 +20,8 @@ exports.getAll = async (req, res, next) => {
         settings: item.settings.map((st) => ({
           name: st.name,
           renters: st.renters.map((renter) => {
-            const {renter:childRenter} = renter._doc
-            const {id,...info} = childRenter._doc
+            const { renter: childRenter } = renter._doc;
+            const { id, ...info } = childRenter._doc;
             return {
               renter: {
                 ...info,
@@ -29,7 +29,7 @@ exports.getAll = async (req, res, next) => {
               },
               quantity: renter.quantity || null,
               price: renter.price || null,
-            }
+            };
           }),
         })),
       };
@@ -39,6 +39,23 @@ exports.getAll = async (req, res, next) => {
       responseData(
         true,
         { services: formattedServices },
+        "lấy thông tin dịch vụ thành công"
+      )
+    );
+  } catch (e) {
+    console.log(e);
+    return res.json(responseData(false, {}, "Lỗi máy chủ"));
+  }
+};
+exports.getAll = async (req, res, next) => {
+  try {
+    const allService = await Service.find({}).populate(
+      "settings.renters.renter"
+    );
+    res.json(
+      responseData(
+        true,
+        { services: allService },
         "lấy thông tin dịch vụ thành công"
       )
     );

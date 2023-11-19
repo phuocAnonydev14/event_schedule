@@ -197,7 +197,7 @@ exports.getRentersByOption = async (req, res) => {
     if (!id) {
       return res.json(responseData(false, {}, "Id không hợp lệ"));
     }
-    const { name } = req.body;
+    const { name } = req.query;
 
     const serviceDetail = await Service.findOne({ _id: id });
     if (!serviceDetail) {

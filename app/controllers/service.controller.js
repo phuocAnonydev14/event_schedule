@@ -9,17 +9,30 @@ const Renter = db.renters;
 // Create and Save a new Tutorial
 exports.getAll = async (req, res, next) => {
   try {
-    const allService = await Service.find({}).populate(
-      "settings.renters.renter"
-    );
+    const allService = await Service.find({});
+    const formattedServices = allService.map((item) => {
+      item = item._doc
+      return {
+        title:item.title,
+        settings: item.settings.map((st) => ({
+          name: st.name,
+          renters: st.renters.map((renter) => ({
+            _id: renter.renter,
+            quantity: renter.quantity || null,
+            price: renter.price || null,
+          })),
+        })),
+      };
+    });
     res.json(
       responseData(
         true,
-        { services: allService },
+        { services: formattedServices },
         "lấy thông tin dịch vụ thành công"
       )
     );
   } catch (e) {
+    console.log(e);
     return res.json(responseData(false, {}, "Lỗi máy chủ"));
   }
 };
@@ -161,7 +174,7 @@ exports.getRentersByOption = async (req, res) => {
     const serviceDetail = await Service.findOne({ _id: id }).populate(
       "settings.renters.renter"
     );
-    if(!serviceDetail){
+    if (!serviceDetail) {
       return res.json(responseData(false, {}, "Dịch vụ không tồn tại"));
     }
     const settings = serviceDetail ? serviceDetail.settings : [];

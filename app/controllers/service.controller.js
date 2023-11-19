@@ -9,23 +9,32 @@ const Renter = db.renters;
 // Create and Save a new Tutorial
 exports.getAll = async (req, res, next) => {
   try {
-    const allService = await Service.find({});
+    const allService = await Service.find({}).populate(
+      "settings.renters.renter"
+    );
     const formattedServices = allService.map((item) => {
       item = item._doc;
       return {
-        _id:item._id,
+        _id: item._id,
         title: item.title,
         settings: item.settings.map((st) => ({
           name: st.name,
-          renters: st.renters.map((renter) => ({
-            _id: renter.renter,
-            quantity: renter.quantity || null,
-            price: renter.price || null,
-          })),
+          renters: st.renters.map((renter) => {
+            const {renter:childRenter} = renter._doc
+            const {id,...info} = childRenter._doc
+            return {
+              renter: {
+                ...info,
+                _id: renter.id,
+              },
+              quantity: renter.quantity || null,
+              price: renter.price || null,
+            }
+          }),
         })),
       };
     });
-    console.log({formattedServices});
+
     res.json(
       responseData(
         true,
@@ -179,7 +188,7 @@ exports.getRentersByOption = async (req, res) => {
     }
     const settings = serviceDetail ? serviceDetail.settings : [];
     const currentSetting = settings.find((item) => item.name == name);
-    if(!currentSetting){
+    if (!currentSetting) {
       return res.json(responseData(false, {}, "Gói không tồn tại"));
     }
     const formatted = {

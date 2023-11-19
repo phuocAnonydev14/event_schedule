@@ -15,15 +15,18 @@ exports.getAllWithCustom = async (req, res, next) => {
     const formattedServices = allService.map((item) => {
       item = item._doc;
       return {
-        _id: item._id,
+        id: item._id,
         title: item.title,
         settings: item.settings.map((st) => ({
           name: st.name,
           renters: st.renters.map((renter) => {
             const { renter: childRenter } = renter._doc;
+            console.log(childRenter._doc);
+            const {_id,...info} = childRenter._doc
             return {
               renter: {
-                ...childRenter._doc
+                id:_id,
+                ...info
               },
               quantity: renter.quantity || null,
               price: renter.price || null,

@@ -21,11 +21,9 @@ exports.getAllWithCustom = async (req, res, next) => {
           name: st.name,
           renters: st.renters.map((renter) => {
             const { renter: childRenter } = renter._doc;
-            const { id, ...info } = childRenter._doc;
             return {
               renter: {
-                ...info,
-                _id: renter.id,
+                ...childRenter._doc
               },
               quantity: renter.quantity || null,
               price: renter.price || null,
@@ -211,7 +209,7 @@ exports.getRentersByOption = async (req, res) => {
     const formatted = {
       name,
       renters: currentSetting.renters.map((item) => ({
-        _id: item.renter,
+        id: item.renter,
         quantity: item.quantity || null,
         price: item.price || null,
       })),

@@ -108,7 +108,6 @@ exports.addSettingOption = async (req, res) => {
       name: servicePack,
       renters: addedRenter,
     });
-    console.log(currentSettings);
 
     const updatedService = await Service.findOneAndUpdate(
       { _id: id },
@@ -162,8 +161,11 @@ exports.getRentersByOption = async (req, res) => {
     const serviceDetail = await Service.findOne({ _id: id }).populate(
       "settings.renters.renter"
     );
-    const settings = serviceDetail.settings;
-    const currentSetting = settings.filter((item) => item.name == name);
+    if(!serviceDetail){
+      return res.json(responseData(false, {}, "Dịch vụ không tồn tại"));
+    }
+    const settings = serviceDetail ? serviceDetail.settings : [];
+    const currentSetting = settings.find((item) => item.name == name);
     return res.json(
       responseData(
         true,
@@ -172,6 +174,7 @@ exports.getRentersByOption = async (req, res) => {
       )
     );
   } catch (e) {
+    console.log(e);
     return res.json(responseData(false, {}, "Lỗi máy chủ"));
   }
 };

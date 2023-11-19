@@ -13,6 +13,12 @@ module.exports = (mongoose) => {
       method: String,
       paypalId: String,
       address: String,
+      email: String,
+      eventTime: String,
+      numberOfAttendes: Number,
+      servicePack:String,
+      totalAmount:Number,
+      name: String,
       phone: String,
       user: {
         type: mongoose.Schema.Types.ObjectId,

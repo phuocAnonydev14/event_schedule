@@ -21,7 +21,6 @@ exports.getAllWithCustom = async (req, res, next) => {
           name: st.name,
           renters: st.renters.map((renter) => {
             const { renter: childRenter } = renter._doc;
-            console.log(childRenter._doc);
             const {_id,...info} = childRenter._doc
             return {
               renter: {
@@ -53,10 +52,32 @@ exports.getAll = async (req, res, next) => {
     const allService = await Service.find({}).populate(
       "settings.renters.renter"
     );
+    const formattedServices = allService.map((item) => {
+      item = item._doc;
+      return {
+        id: item._id,
+        title: item.title,
+        settings: item.settings.map((st) => ({
+          name: st.name,
+          renters: st.renters.map((renter) => {
+            const { renter: childRenter } = renter._doc;
+            const {_id,...info} = childRenter._doc
+            return {
+              renter: {
+                id:_id,
+                ...info
+              },
+              quantity: renter.quantity || null,
+              price: renter.price || null,
+            };
+          }),
+        })),
+      };
+    });
     res.json(
       responseData(
         true,
-        { services: allService },
+        { services: formattedServices },
         "lấy thông tin dịch vụ thành công"
       )
     );

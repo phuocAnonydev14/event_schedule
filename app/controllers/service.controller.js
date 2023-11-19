@@ -11,9 +11,10 @@ exports.getAll = async (req, res, next) => {
   try {
     const allService = await Service.find({});
     const formattedServices = allService.map((item) => {
-      item = item._doc
+      item = item._doc;
       return {
-        title:item.title,
+        _id:item._id,
+        title: item.title,
         settings: item.settings.map((st) => ({
           name: st.name,
           renters: st.renters.map((renter) => ({
@@ -24,6 +25,7 @@ exports.getAll = async (req, res, next) => {
         })),
       };
     });
+    console.log({formattedServices});
     res.json(
       responseData(
         true,
@@ -171,18 +173,27 @@ exports.getRentersByOption = async (req, res) => {
     }
     const { name } = req.body;
 
-    const serviceDetail = await Service.findOne({ _id: id }).populate(
-      "settings.renters.renter"
-    );
+    const serviceDetail = await Service.findOne({ _id: id });
     if (!serviceDetail) {
       return res.json(responseData(false, {}, "Dịch vụ không tồn tại"));
     }
     const settings = serviceDetail ? serviceDetail.settings : [];
     const currentSetting = settings.find((item) => item.name == name);
+    if(!currentSetting){
+      return res.json(responseData(false, {}, "Gói không tồn tại"));
+    }
+    const formatted = {
+      name,
+      renters: currentSetting.renters.map((item) => ({
+        _id: item.renter,
+        quantity: item.quantity || null,
+        price: item.price || null,
+      })),
+    };
     return res.json(
       responseData(
         true,
-        { setting: currentSetting },
+        { setting: formatted },
         "Lấy thông tin dịch vụ thành công"
       )
     );

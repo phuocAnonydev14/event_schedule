@@ -1,4 +1,4 @@
-const { responseData } = require("../constant/responseData");
+const {responseData} = require("../constant/responseData");
 const db = require("../models");
 const Order = db.orders;
 const Renter = db.renters;
@@ -6,8 +6,12 @@ const Renter = db.renters;
 
 exports.getAll = async (req, res, next) => {
     try {
-        const allOrders = await Order.find({}).populate("renters.renter user")
-        res.json(responseData(true, { orders: allOrders }, 'Lấy thông đơn hàng thành công'));
+        const allOrders = await Order.find({}).populate("renters.renter user").lean()
+        const results = allOrders.map(order => {
+            return ({...order, renters: order.renters.map(item => ({...item, renter:{id:item.renter._id,...item.renter}}))})
+        })
+        console.log(results[0].renters)
+        res.json(responseData(true, {orders: results}, 'Lấy thông đơn hàng thành công'));
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
     }
@@ -16,8 +20,11 @@ exports.getAll = async (req, res, next) => {
 exports.getUserOrder = async (req, res, next) => {
     try {
         const {id} = req.params
-        const allOrders = await Order.find({user:id}).populate("renters.renter user")
-        res.json(responseData(true, { orders: allOrders }, 'Lấy thông đơn hàng thành công'));
+        const allOrders = await Order.find({user: id}).populate("renters.renter user").lean()
+        const results = allOrders.map(order => {
+            return ({...order, renters: order.renters.map(item => ({...item, renter:{id:item.renter._id,...item.renter}}))})
+        })
+        res.json(responseData(true, {orders: results}, 'Lấy thông đơn hàng thành công'));
     } catch (e) {
         console.log(e)
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
@@ -25,11 +32,9 @@ exports.getUserOrder = async (req, res, next) => {
 };
 
 
-
-
 exports.create = async (req, res, next) => {
     try {
-        const { renters, method } = req.body
+        const {renters, method} = req.body
 
         if (!renters || renters.length === 0 || !method) {
             return res.json(responseData(false, {}, "các trường chưa hợp lệ"))
@@ -50,15 +55,14 @@ exports.create = async (req, res, next) => {
         await Promise.all(renters.map(async renter => {
             const currentRenter = await Renter.findById(renter.renter)
             const consumedQuantity = (currentRenter.sold || 0) + +renter.quantity
-            await currentRenter.updateOne({ sold: consumedQuantity })
+            await currentRenter.updateOne({sold: consumedQuantity})
         }))
 
         const newOrder = new Order({
-            ...req.body,
-            user: req.user._id
+            ...req.body, user: req.user._id
         })
         await newOrder.save()
-        return res.json(responseData(true, { order: newOrder }, 'Thanh toán thành công'));
+        return res.json(responseData(true, {order: newOrder}, 'Thanh toán thành công'));
     } catch (e) {
         console.log(e);
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
@@ -68,11 +72,11 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     try {
-        const { id } = req.params
+        const {id} = req.params
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const { id: updatedRenterId, quantity } = req.body
+        const {id: updatedRenterId, quantity} = req.body
         const currentRenter = await Renter.findById(updatedRenterId)
         if (currentRenter) {
             const currentOrder = await Order.findById(id)
@@ -86,13 +90,12 @@ exports.update = async (req, res, next) => {
             if (currentRenter.quantity < consumedQuantity) {
                 return res.json(responseData(true, {}, 'Số lượng trong kho không đủ'));
             }
-            await currentRenter.update({ sold: consumedQuantity })
-            await currentOrder.update(
-                { $set: { 'renters.$[elem].quantity': +quantity } },
-                { arrayFilters: [{ 'elem.renter': updatedRenterId }], new: true }
-            );
+            await currentRenter.update({sold: consumedQuantity})
+            await currentOrder.update({$set: {'renters.$[elem].quantity': +quantity}}, {
+                arrayFilters: [{'elem.renter': updatedRenterId}], new: true
+            });
             const orderRes = await Order.findById(id).populate("renters.renter event")
-            res.json(responseData(true, { order: orderRes }, 'Cập nhật thông tin đơn hàng thành công'));
+            res.json(responseData(true, {order: orderRes}, 'Cập nhật thông tin đơn hàng thành công'));
         } else {
             return res.json(responseData(true, {}, 'Thiết bị không tồn tại'));
         }
@@ -106,11 +109,11 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res) => {
     try {
 
-        const { id } = req.params
+        const {id} = req.params
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
-        const deleteRes = await Order.deleteOne({ _id: id })
+        const deleteRes = await Order.deleteOne({_id: id})
         if (!deleteRes.deletedCount) {
             return res.json(responseData(false, {}, "Lỗi máy chủ"))
         }
@@ -122,8 +125,8 @@ exports.delete = async (req, res) => {
 
 exports.deleteRenterOrder = async (req, res) => {
     try {
-        const { id } = req.params
-        const { renterId } = req.body
+        const {id} = req.params
+        const {renterId} = req.body
         if (!id || !renterId) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
@@ -132,7 +135,7 @@ exports.deleteRenterOrder = async (req, res) => {
         const renterOrderRes = currentRenterOrders.filter(renter => {
             return renter.renter !== renterId
         });
-        await order.update({ renters: renterOrderRes })
+        await order.update({renters: renterOrderRes})
         return res.json(responseData(true, {}, "xóa thiết bị trong đơn hàng thành công"))
     } catch (e) {
         console.log(e);
@@ -143,7 +146,7 @@ exports.deleteRenterOrder = async (req, res) => {
 
 exports.findById = async (req, res) => {
     try {
-        const { id } = req.params
+        const {id} = req.params
         if (!id) {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
@@ -151,7 +154,7 @@ exports.findById = async (req, res) => {
         if (!order) {
             return res.json(responseData(false, {}, "Đơn hàng không tồn tại"))
         }
-        return res.json(responseData(true, { order }, "lấy thông tin đơn hàng thành công"))
+        return res.json(responseData(true, {order}, "lấy thông tin đơn hàng thành công"))
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
     }

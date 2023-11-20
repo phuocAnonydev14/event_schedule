@@ -16,12 +16,14 @@ exports.getAll = async (req, res, next) => {
 exports.getUserOrder = async (req, res, next) => {
     try {
         const {id} = req.params
-        const allOrders = await Order.find({user:id}).populate("renters.renter")
+        const allOrders = await Order.find({user:id}).populate("renters.renter user")
         res.json(responseData(true, { orders: allOrders }, 'Lấy thông đơn hàng thành công'));
     } catch (e) {
+        console.log(e)
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
     }
 };
+
 
 
 
@@ -128,7 +130,7 @@ exports.deleteRenterOrder = async (req, res) => {
         const order = await Order.findById(id)
         const currentRenterOrders = order.renters
         const renterOrderRes = currentRenterOrders.filter(renter => {
-            return renter.renter != renterId
+            return renter.renter !== renterId
         });
         await order.update({ renters: renterOrderRes })
         return res.json(responseData(true, {}, "xóa thiết bị trong đơn hàng thành công"))

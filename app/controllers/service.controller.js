@@ -60,12 +60,11 @@ exports.getAll = async (req, res, next) => {
         settings: item.settings.map((st) => ({
           name: st.name,
           renters: st.renters.map((renter) => {
-            const { renter: childRenter } = renter._doc;
-            const {_id,...info} = childRenter._doc
+            const {...info} = renter._doc.renter || {}
             return {
               renter: {
-                id:_id,
-                ...info
+                id:info._id || '',
+                ...info._doc
               },
               quantity: renter.quantity || null,
               price: renter.price || null,

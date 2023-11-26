@@ -9,7 +9,37 @@ const Renter = db.renters;
 // Create and Save a new Tutorial
 exports.getAllWithCustom = async (req, res, next) => {
   try {
-    const allService = await Service.find({}).populate(
+    let fillteredList = {};
+    if (req.query.title) {
+      const regexFilter = new RegExp(req.query.title, "i");
+      fillteredList = {
+        ...fillteredList,
+        $or: [{ title: { $regex: regexFilter } }],
+      };
+    }
+
+    if (req.query.startDate) {
+      const startDate = new Date(req.query.startDate);
+      
+      fillteredList = {
+        ...fillteredList,
+        createdAt: {
+          $gte: startDate,
+        },
+      };
+    }
+
+    if (req.query.endDate) {
+      const endDate = new Date(req.query.endDate);
+      fillteredList = {
+        ...fillteredList,
+        createdAt: {
+          ...(fillteredList.createdAt || {}),
+          $lte: endDate,
+        },
+      };
+    }
+    const allService = await Service.find({...fillteredList}).populate(
       "settings.renters.renter"
     );
     const formattedServices = allService.map((item) => {

@@ -20,11 +20,11 @@ exports.getAllWithCustom = async (req, res, next) => {
         settings: item.settings.map((st) => ({
           name: st.name,
           renters: st.renters.map((renter) => {
-            const {...info} = renter._doc.renter || {}
+            const { ...info } = renter._doc.renter || {};
             return {
               renter: {
-                id:info._id || '',
-                ...info._doc
+                id: info._id || "",
+                ...info._doc,
               },
               quantity: renter.quantity || null,
               price: renter.price || null,
@@ -48,7 +48,38 @@ exports.getAllWithCustom = async (req, res, next) => {
 };
 exports.getAll = async (req, res, next) => {
   try {
-    const allService = await Service.find({}).populate(
+    let fillteredList = {};
+    if (req.query.title) {
+      const regexFilter = new RegExp(req.query.title, "i");
+      fillteredList = {
+        ...fillteredList,
+        $or: [{ title: { $regex: regexFilter } }],
+      };
+    }
+
+    if (req.query.startDate) {
+      const startDate = new Date(req.query.startDate);
+      
+      fillteredList = {
+        ...fillteredList,
+        createdAt: {
+          $gte: startDate,
+        },
+      };
+    }
+
+    if (req.query.endDate) {
+      const endDate = new Date(req.query.endDate);
+      fillteredList = {
+        ...fillteredList,
+        createdAt: {
+          ...(fillteredList.createdAt || {}),
+          $lte: endDate,
+        },
+      };
+    }
+
+    const allService = await Service.find({ ...fillteredList }).populate(
       "settings.renters.renter"
     );
     const formattedServices = allService.map((item) => {
@@ -59,11 +90,11 @@ exports.getAll = async (req, res, next) => {
         settings: item.settings.map((st) => ({
           name: st.name,
           renters: st.renters.map((renter) => {
-            const {...info} = renter._doc.renter || {}
+            const { ...info } = renter._doc.renter || {};
             return {
               renter: {
-                id:info._id || '',
-                ...info._doc
+                id: info._id || "",
+                ...info._doc,
               },
               quantity: renter.quantity || null,
               price: renter.price || null,

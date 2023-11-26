@@ -8,6 +8,7 @@ const Service = db.service;
 // Create and Save a new Tutorial
 exports.getAll = async (req, res, next) => {
     try {
+       
         const allEvents = await Event.find({}).select("title banner")
         res.json(responseData(true, { events: allEvents }, 'lấy thông tin sự kiện thành công'));
     } catch (e) {

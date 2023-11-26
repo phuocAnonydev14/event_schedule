@@ -10,7 +10,6 @@ exports.getAll = async (req, res, next) => {
         const results = allOrders.map(order => {
             return ({...order, renters: order.renters.map(item => ({...item, renter:{id:item.renter._id,...item.renter}}))})
         })
-        console.log(results[0].renters)
         res.json(responseData(true, {orders: results}, 'Lấy thông đơn hàng thành công'));
     } catch (e) {
         return res.json(responseData(false, {}, "Lỗi máy chủ"))
@@ -40,17 +39,17 @@ exports.create = async (req, res, next) => {
             return res.json(responseData(false, {}, "các trường chưa hợp lệ"))
         }
 
-        for (let renter of renters) {
-            const currentRenter = await Renter.findById(renter.renter)
-            if (currentRenter) {
-                const consumedQuantity = (currentRenter.sold || 0) + renter.quantity
-                if (currentRenter.quantity < consumedQuantity) {
-                    return res.json(responseData(true, {}, 'Số lượng trong kho không đủ'));
-                }
-            } else {
-                return res.json(responseData(true, {}, 'Thiết bị không tồn tại'));
-            }
-        }
+        // for (let renter of renters) {
+        //     const currentRenter = await Renter.findById(renter.renter)
+        //     if (currentRenter) {
+        //         const consumedQuantity = (currentRenter.sold || 0) + renter.quantity
+        //         if (currentRenter.quantity < consumedQuantity) {
+        //             return res.json(responseData(true, {}, 'Số lượng trong kho không đủ'));
+        //         }
+        //     } else {
+        //         return res.json(responseData(true, {}, 'Thiết bị không tồn tại'));
+        //     }
+        // }
 
         await Promise.all(renters.map(async renter => {
             const currentRenter = await Renter.findById(renter.renter)

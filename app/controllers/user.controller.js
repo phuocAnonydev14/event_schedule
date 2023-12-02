@@ -18,6 +18,20 @@ exports.update = async (req, res) => {
     }
 }
 
+exports.updateSelfProfile = async (req, res) => {
+    try {
+        const {_id} = req.user
+        if (!_id) {
+            return res.json(responseData(false, {}, "Id không hợp lệ"))
+        }
+        const updatedUser = await User.findOneAndUpdate(_id,{...req.body},{new:true})
+        res.json(responseData(true, {user: updatedUser}, 'Cập nhật thông tin người dùng thành công'));
+    } catch (e) {
+        console.log(e);
+        return res.json(responseData(false, {}, "Lỗi máy chủ"))
+    }
+}
+
 exports.getAll = async (req, res) => {
     try {
         const users = await User.find({})

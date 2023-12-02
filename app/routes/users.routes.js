@@ -6,10 +6,11 @@ module.exports = (app) => {
 
   const router = require("express").Router();
 
-  router.get("/", user.getAll);
-  router.patch("/:id", user.update);
+  router.get("/",adminCheck, user.getAll);
+  router.patch("/me", user.updateSelfProfile);
+  router.patch("/:id",adminCheck, user.update);
   router.delete("/:id", user.delete);
-  router.patch("/inviteAdmin/:id", user.inviteAdmin);
+  router.patch("/inviteAdmin/:id",adminCheck, user.inviteAdmin);
 
-  app.use("/api/user", authenticateToken, adminCheck, router);
+  app.use("/api/user", authenticateToken,  router);
 };

@@ -76,28 +76,32 @@ exports.update = async (req, res, next) => {
             return res.json(responseData(false, {}, "Id không hợp lệ"))
         }
         const {id: updatedRenterId, quantity} = req.body
-        const currentRenter = await Renter.findById(updatedRenterId)
-        if (currentRenter) {
-            const currentOrder = await Order.findById(id)
-            if (!currentOrder) {
-                return res.json(responseData(false, {}, "Đơn hàng không tồn tại"))
-            }
-            const orderRenters = currentOrder.renters
-            const currentRenterOrder = orderRenters.find(item => item.renter == updatedRenterId)
+        // const currentRenter = await Renter.findById(updatedRenterId)
+        // if (currentRenter) {
+        //     const currentOrder = await Order.findById(id)
+        //     if (!currentOrder) {
+        //         return res.json(responseData(false, {}, "Đơn hàng không tồn tại"))
+        //     }
+        //     const orderRenters = currentOrder.renters
+        //     const currentRenterOrder = orderRenters.find(item => item.renter == updatedRenterId)
 
-            const consumedQuantity = (currentRenter.sold || 0) - currentRenterOrder.quantity + +quantity
-            if (currentRenter.quantity < consumedQuantity) {
-                return res.json(responseData(true, {}, 'Số lượng trong kho không đủ'));
-            }
-            await currentRenter.update({sold: consumedQuantity})
-            await currentOrder.update({$set: {'renters.$[elem].quantity': +quantity}}, {
-                arrayFilters: [{'elem.renter': updatedRenterId}], new: true
-            });
-            const orderRes = await Order.findById(id).populate("renters.renter event")
+        //     const consumedQuantity = (currentRenter.sold || 0) - currentRenterOrder.quantity + +quantity
+        //     if (currentRenter.quantity < consumedQuantity) {
+        //         return res.json(responseData(true, {}, 'Số lượng trong kho không đủ'));
+        //     }
+        //     await currentRenter.update({sold: consumedQuantity})
+        //     await currentOrder.update({$set: {'renters.$[elem].quantity': +quantity}}, {
+        //         arrayFilters: [{'elem.renter': updatedRenterId}], new: true
+        //     });
+        //     const orderRes = await Order.findById(id).populate("renters.renter event")
+        //     res.json(responseData(true, {order: orderRes}, 'Cập nhật thông tin đơn hàng thành công'));
+        // } else {
+        //     return res.json(responseData(true, {}, 'Thiết bị không tồn tại'));
+        // }
+
+            const orderRes = await Order.findOneAndUpdate(id,{...req.body}).populate("renters.renter event")
             res.json(responseData(true, {order: orderRes}, 'Cập nhật thông tin đơn hàng thành công'));
-        } else {
-            return res.json(responseData(true, {}, 'Thiết bị không tồn tại'));
-        }
+            
 
     } catch (e) {
         console.log(e);

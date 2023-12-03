@@ -8,7 +8,7 @@ module.exports = app => {
   router.get("/", order.getAll);
   router.get("/:id", order.getUserOrder);
   router.post("/", order.create);
-  // router.patch("/:id", order.update);
+  router.patch("/:id", order.update);
   // router.delete("/:id", order.delete);
   router.delete("/:id/renter", order.deleteRenterOrder);
 

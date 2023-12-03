@@ -16,14 +16,15 @@ module.exports = (mongoose) => {
       email: String,
       eventTime: String,
       numberOfAttendes: Number,
-      servicePack:String,
-      totalAmount:Number,
+      servicePack: String,
+      totalAmount: Number,
       name: String,
       phone: String,
       user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
       },
+      status: String,
     },
     { timestamps: true }
   );

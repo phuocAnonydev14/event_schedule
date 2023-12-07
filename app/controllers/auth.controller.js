@@ -98,6 +98,17 @@ exports.changePassword = async (req, res) => {
     if(newPassword == oldPassword){
       return res.json(responseData(false, {}, "Mật khẩu mới không được trùng với mật khẩu cũ"));
     }
+
+    const currentUser = await User.findOne({_id}).lean()
+    const isPasswordMatch =await bcrypt.compare(oldPassword,currentUser.password)
+    
+    if(!isPasswordMatch){
+      return res.json(responseData(false, {}, "Mật khẩu cũ không hợp lệ"));
+    }
+
+    console.log(currentUser);
+
+    
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await User.update({ _id }, { password: hashedPassword });
     return res.json(responseData(true,{},"Thay đổi mật khẩu thành công"))

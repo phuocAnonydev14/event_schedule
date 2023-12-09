@@ -160,7 +160,7 @@ exports.create = async (req, res, next) => {
 
     const newService = new Service({
       ...req.body,
-      settings: [],
+      // settings: [],
     });
     await newService.save();
     res.json(

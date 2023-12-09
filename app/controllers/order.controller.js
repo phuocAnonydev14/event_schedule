@@ -8,8 +8,10 @@ exports.getAll = async (req, res, next) => {
     const allOrders = await Order.find({})
       .populate("renters.renter user")
       .lean();
+      // console.log(allOrders.transform());
     const results = allOrders.map((order) => {
       return {
+        id:order._id,
         ...order,
         renters: order.renters.map((item) => ({
           ...item,
@@ -21,6 +23,7 @@ exports.getAll = async (req, res, next) => {
       responseData(true, { orders: results }, "Lấy thông đơn hàng thành công")
     );
   } catch (e) {
+    console.log(e);
     return res.json(responseData(false, {}, "Lỗi máy chủ"));
   }
 };
@@ -33,6 +36,7 @@ exports.getUserOrder = async (req, res, next) => {
       .lean();
     const results = allOrders.map((order) => {
       return {
+        id:order._id,
         ...order,
         renters: order.renters.map((item) => ({
           ...item,
@@ -182,12 +186,12 @@ exports.findById = async (req, res) => {
     if (!id) {
       return res.json(responseData(false, {}, "Id không hợp lệ"));
     }
-    const order = await Order.findById(id);
+    const order = await Order.findById(id).lean();
     if (!order) {
       return res.json(responseData(false, {}, "Đơn hàng không tồn tại"));
     }
     return res.json(
-      responseData(true, { order }, "lấy thông tin đơn hàng thành công")
+      responseData(true, { order:{...order,id:order._id} }, "lấy thông tin đơn hàng thành công")
     );
   } catch (e) {
     return res.json(responseData(false, {}, "Lỗi máy chủ"));

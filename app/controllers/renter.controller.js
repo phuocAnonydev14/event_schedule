@@ -10,8 +10,7 @@ exports.getAll = async (req, res, next) => {
         true,
         {
           renters: allRenters.map((item) => {
-            const { sold, ...info } = item;
-            return { ...info, id: info._id };
+            return { ...item, id: item._id };
           }),
         },
         "lấy thông tin thiết bị thành công"

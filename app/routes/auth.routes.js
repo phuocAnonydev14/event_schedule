@@ -8,6 +8,7 @@ module.exports = app => {
   // Create a new Tutorial
   router.post("/sign-up", auth.signup);
   router.post("/sign-in", auth.signIn);
+  router.post("/sign-in-google", auth.signInWithGoogle);
   router.post("/logout", auth.logout);
   router.post("/change-password",authenticateToken, auth.changePassword);
 

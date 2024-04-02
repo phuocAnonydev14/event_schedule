@@ -70,6 +70,45 @@ exports.signIn = async (req, res) => {
   }
 };
 
+exports.signInWithGoogle = async (req, res) => {
+  try {
+    const { email, googleId } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      const newUser = new User({
+        ...req.body,
+        role: "user",
+      });
+
+      await newUser.save();
+      const accessToken = jwt.sign(
+        { _id: newUser._id, email: newUser.email, role: newUser.role },
+        "your_secret_key"
+      );
+      return res.json(
+        responseData(
+          true,
+          { accessToken, account: newUser },
+          "Đăng nhập thành công."
+        )
+      );
+    }
+    const accessToken = jwt.sign(
+      { _id: user._id, email: user.email, role: user.role },
+      "your_secret_key"
+    );
+    return res.json(
+      responseData(
+        true,
+        { accessToken, account: user },
+        "Đăng nhập thành công."
+      )
+    );
+  } catch(e) {
+    console.log(e);
+  }
+};
+
 exports.fetchUser = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
@@ -95,23 +134,27 @@ exports.changePassword = async (req, res) => {
     if (!newPassword | !oldPassword) {
       return res.json(responseData(false, {}, "các trường chưa hợp lệ"));
     }
-    if(newPassword == oldPassword){
-      return res.json(responseData(false, {}, "Mật khẩu mới không được trùng với mật khẩu cũ"));
+    if (newPassword == oldPassword) {
+      return res.json(
+        responseData(false, {}, "Mật khẩu mới không được trùng với mật khẩu cũ")
+      );
     }
 
-    const currentUser = await User.findOne({_id}).lean()
-    const isPasswordMatch =await bcrypt.compare(oldPassword,currentUser.password)
-    
-    if(!isPasswordMatch){
+    const currentUser = await User.findOne({ _id }).lean();
+    const isPasswordMatch = await bcrypt.compare(
+      oldPassword,
+      currentUser.password
+    );
+
+    if (!isPasswordMatch) {
       return res.json(responseData(false, {}, "Mật khẩu cũ không hợp lệ"));
     }
 
     console.log(currentUser);
 
-    
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await User.update({ _id }, { password: hashedPassword });
-    return res.json(responseData(true,{},"Thay đổi mật khẩu thành công"))
+    return res.json(responseData(true, {}, "Thay đổi mật khẩu thành công"));
   } catch (e) {
     return res.json(responseData(false, {}, "Lỗi máy chủ"));
   }
